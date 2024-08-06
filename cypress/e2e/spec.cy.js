@@ -8,10 +8,10 @@ describe('Poll creation', () => {
     cy.get('button[aria-label="Tạo bình chọn"]').click()
 
     // Fill the poll title
-    cy.contains('label', title)
+    cy.contains('label', 'Câu hỏi bình chọn')
     .parent()
     .find('input')
-    .type('Favorite Color')
+    .type(title)
 
     // Fill the poll choices
     if (choices.length > 2) {
@@ -35,6 +35,6 @@ describe('Poll creation', () => {
   }
   it('Create Valid Poll with Two Options and a Future End Date', () => {
     cy.userLogin()
-    pollCreationVisit(title='Favorite Color', choices=['Red', 'Blue', 'Green'], due='31/08/202423:59')
+    pollCreationVisit('Favorite Color', ['Red', 'Blue', 'Green'], '31/08/202423:59') // any problems with this line
   })
 })
