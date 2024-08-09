@@ -1,6 +1,6 @@
-describe('Poll creation', () => {
-  const HOST = 'http://192.168.0.101:3000/';
+const HOST = "http://192.168.0.101:3000/";
 
+describe('Poll creation', () => {
   const pollCreationVisit = (title, choices, due) => {
     cy.visit(HOST + 'chat')
     cy.get('a[href^="/chat/group/"]').first().click()
@@ -29,12 +29,11 @@ describe('Poll creation', () => {
       }
     }
 
-
     // Fill the poll end date
     cy.get('input[placeholder="Không có thời hạn"]').type(due) // 31/08/2024 23:59
   }
   it('Create Valid Poll with Two Options and a Future End Date', () => {
     cy.userLogin()
-    pollCreationVisit('Favorite Color', ['Red', 'Blue', 'Green'], '31/08/202423:59') // any problems with this line
+    pollCreationVisit('Favorite Color', ['Red', 'Blue', 'Green'], '31/08/202423:59')
   })
 })
