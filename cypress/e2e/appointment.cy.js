@@ -1,4 +1,4 @@
-import * as utils from "../utils/dateTime";
+import * as utils from "../utils";
 
 const HOST = Cypress.env("HOST");
 
@@ -116,236 +116,237 @@ describe("Appointment creation", (title, description, from, to, date, location, 
   };
 
   // 01
-  // it("Create Valid Appointment", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = utils.getTimeString(1, 0)),
-  //     (to = utils.getTimeString(1, 10)),
-  //     (date = utils.getDateString(1)),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]))
-  //   );
+  it("Create Valid Appointment", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = utils.getTimeString(1, 0)),
+      (to = utils.getTimeString(1, 10)),
+      (date = utils.getDateString(1)),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env("CURRENT_USER"))))
+    );
 
-  //   cy.contains("Tạo lịch hẹn thành công").should("be.visible");
-  // });
+    cy.contains("Tạo lịch hẹn thành công").should("be.visible");
+  });
 
   // 02
-  // it("Create Invalid Appointment without Title", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = ""),
-  //     (description = "Meeting date"),
-  //     (from = utils.getTimeString(1, 0)),
-  //     (to = utils.getTimeString(1, 10)),
-  //     (date = utils.getDateString(1)),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]))
-  //   );
+  it("Create Invalid Appointment without Title", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = ""),
+      (description = utils.getDescription()),
+      (from = utils.getTimeString(1, 0)),
+      (to = utils.getTimeString(1, 10)),
+      (date = utils.getDateString(1)),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))))
+    );
 
-  //   cy.contains("Vui lòng nhập tiêu đề").should("be.visible");
-  // });
+    cy.contains("Vui lòng nhập tiêu đề").should("be.visible");
+  });
 
   // 03
-  // it("Create Invalid Appointment with All Fields Filled and Past Start Time", () => {
-  //   cy.userLogin();
-  //   const startTime = utils.getTimeString(-1, 0);
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = startTime),
-  //     (to = utils.getTimeString(1, 10)),
-  //     (date = utils.getDateString(1)),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]),
-  //     (submit = false))
-  //   );
+  it("Create Invalid Appointment with All Fields Filled and Past Start Time", () => {
+    cy.userLogin();
+    const startTime = utils.getTimeString(-1, 0);
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = startTime),
+      (to = utils.getTimeString(1, 10)),
+      (date = utils.getDateString(1)),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))),
+      (submit = false))
+    );
 
-  //     cy.get('input[name="timeStart"]').then(($input) => {
-  //       const date = $input.val();
-  //       // the value of the input field should not be the same as the time
-  //       expect(date).not.to.eq(startTime);
-  //     });
-  // });
+      cy.get('input[name="timeStart"]').then(($input) => {
+        const date = $input.val();
+        // the value of the input field should not be the same as the time
+        expect(date).not.to.eq(startTime);
+      });
+  });
 
   // 04
-  // it("Create Invalid Appointment with All Fields Filled and the End Time before Start Time", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = utils.getTimeString(1, 2)),
-  //     (to = utils.getTimeString(1, 1)),
-  //     (date = utils.getDateString(1)),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]))
-  //   );
+  it("Create Invalid Appointment with All Fields Filled and the End Time before Start Time", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = utils.getTimeString(1, 2)),
+      (to = utils.getTimeString(1, 1)),
+      (date = utils.getDateString(1)),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))),
+      (submit = true))
+    );
 
-  //   cy.contains("Giờ kết thúc phải luôn lớn hơn giờ bắt đầu").should("be.visible");
-  // });
+    cy.contains("Giờ kết thúc phải luôn lớn hơn giờ bắt đầu").should("be.visible");
+  });
 
   // 05
-  // it("Create Invalid Appointment with All Fields Filled and Past Start Date", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = utils.getTimeString(1, 1)),
-  //     (to = utils.getTimeString(1, 2)),
-  //     (date = utils.getDateString(-1)),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]))
-  //   );
+  it("Create Invalid Appointment with All Fields Filled and Past Start Date", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = utils.getTimeString(1, 1)),
+      (to = utils.getTimeString(1, 2)),
+      (date = utils.getDateString(-1)),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))))
+    );
 
-  //   cy.contains("Ngày hẹn phải lớn hơn hoặc bằng ngày hiện tại").should("be.visible");
-  // });
+    cy.contains("Ngày hẹn phải lớn hơn hoặc bằng ngày hiện tại").should("be.visible");
+  });
 
   // 06
-  // it("Create Invalid Appointment with No Selected Attendees", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = utils.getTimeString(1, 1)),
-  //     (to = utils.getTimeString(1, 2)),
-  //     (date = utils.getDateString(1)),
-  //     (location = "HCMUS"),
-  //     (attendees = []))
-  //   );
+  it("Create Invalid Appointment with No Selected Attendees", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = utils.getTimeString(1, 1)),
+      (to = utils.getTimeString(1, 2)),
+      (date = utils.getDateString(1)),
+      (location = utils.getLocation()),
+      (attendees = []))
+    );
 
-  //   cy.contains("Vui lòng chọn người tham gia lịch hẹn").should("be.visible");
-  // });
+    cy.contains("Vui lòng chọn người tham gia lịch hẹn").should("be.visible");
+  });
 
   // 07
-  // it("Create Valid Appointment with All Fields Filled and Upper Boundary Value of Start Time", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = utils.getTimeString(1, 1)),
-  //     (to = utils.getTimeString(1, 10)),
-  //     (date = utils.getDateString()),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]))
-  //   );
+  it("Create Valid Appointment with All Fields Filled and Upper Boundary Value of Start Time", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = utils.getTimeString(1, 1)),
+      (to = utils.getTimeString(1, 10)),
+      (date = utils.getDateString()),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))))
+    );
 
-  //   cy.contains("Tạo lịch hẹn thành công").should("be.visible");
-  // });
+    cy.contains("Tạo lịch hẹn thành công").should("be.visible");
+  });
 
   // 08
-  // it("Create Valid Appointment with All Fields Filled and Minimum Duration", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = utils.getTimeString(1, 1)),
-  //     (to = utils.getTimeString(1, 2)),
-  //     (date = utils.getDateString()),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]))
-  //   );
+  it("Create Valid Appointment with All Fields Filled and Minimum Duration", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = utils.getTimeString(1, 1)),
+      (to = utils.getTimeString(1, 2)),
+      (date = utils.getDateString()),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))))
+    );
 
-  //   cy.contains("Tạo lịch hẹn thành công").should("be.visible");
-  // });
+    cy.contains("Tạo lịch hẹn thành công").should("be.visible");
+  });
 
   // 09
-  // it("Create Valid Appointment with All Fields Filled and Minimum Valid Date", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = utils.getTimeString(1, 1)),
-  //     (to = utils.getTimeString(1, 2)),
-  //     (date = utils.getDateString()),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]))
-  //   );
+  it("Create Valid Appointment with All Fields Filled and Minimum Valid Date", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = utils.getTimeString(1, 1)),
+      (to = utils.getTimeString(1, 2)),
+      (date = utils.getDateString()),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))))
+    );
 
-  //   cy.contains("Tạo lịch hẹn thành công").should("be.visible");
-  // });
+    cy.contains("Tạo lịch hẹn thành công").should("be.visible");
+  });
 
   // 10
-  // it("Create Invalid Appointment with All Fields Filled and Maximum Invalid Start time", () => {
-  //   cy.userLogin();
-  //   const startTime = utils.getTimeString(0, 0);
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = startTime),
-  //     (to = utils.getTimeString(0, 2)),
-  //     (date = utils.getDateString()),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]),
-  //     (submit = false))
-  //   );
+  it("Create Invalid Appointment with All Fields Filled and Maximum Invalid Start time", () => {
+    cy.userLogin();
+    const startTime = utils.getTimeString(0, 0);
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = startTime),
+      (to = utils.getTimeString(0, 2)),
+      (date = utils.getDateString()),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))),
+      (submit = false))
+    );
 
-  //   cy.get('input[name="timeStart"]').then(($input) => {
-  //     const date = $input.val();
-  //     // the value of the input field should not be the same as the time
-  //     expect(date).not.to.eq(startTime);
-  //   });
-  // });
+    cy.get('input[name="timeStart"]').then(($input) => {
+      const date = $input.val();
+      // the value of the input field should not be the same as the time
+      expect(date).not.to.eq(startTime);
+    });
+  });
 
   // 11
-  // it("Create Invalid Appointment with All Fields Filled and Lower Boundary Value of Start time", () => {
-  //   cy.userLogin();
-  //   const startTime = utils.getTimeString(0, -1);
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = startTime),
-  //     (to = utils.getTimeString(0, 2)),
-  //     (date = utils.getDateString()),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]),
-  //     (submit = false))
-  //   );
+  it("Create Invalid Appointment with All Fields Filled and Lower Boundary Value of Start time", () => {
+    cy.userLogin();
+    const startTime = utils.getTimeString(0, -1);
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = startTime),
+      (to = utils.getTimeString(0, 2)),
+      (date = utils.getDateString()),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))),
+      (submit = false))
+    );
 
-  //   cy.get('input[name="timeStart"]').then(($input) => {
-  //     const date = $input.val();
-  //     // the value of the input field should not be the same as the time
-  //     expect(date).not.to.eq(startTime);
-  //   });
-  // });
+    cy.get('input[name="timeStart"]').then(($input) => {
+      const date = $input.val();
+      // the value of the input field should not be the same as the time
+      expect(date).not.to.eq(startTime);
+    });
+  });
 
   // 12
-  // it("Create Invalid Appointment with All Fields Filled and Start time equals to End time", () => {
-  //   cy.userLogin();
-  //   const startTime = utils.getTimeString(0, 1);
-  //   taskCreationVisit(
-  //     ((title = "Meeting date"),
-  //     (description = "Meeting date"),
-  //     (from = startTime),
-  //     (to = utils.getTimeString(0, 1)),
-  //     (date = utils.getDateString()),
-  //     (location = "HCMUS"),
-  //     (attendees = ["Quan"]),
-  //     (submit = false))
-  //   );
+  it("Create Invalid Appointment with All Fields Filled and Start time equals to End time", () => {
+    cy.userLogin();
+    const startTime = utils.getTimeString(0, 1);
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (from = startTime),
+      (to = utils.getTimeString(0, 1)),
+      (date = utils.getDateString()),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))),
+      (submit = false))
+    );
 
-  //     cy.get('input[name="timeStart"]').then(($start) => {
-  //       const startDate = $start.val();
-  //       // the value of the input field should not be the same as the time
-  //       cy.get('input[name="timeEnd"]').then(($end) => {
-  //         const endDate = $end.val();
-  //         // the value of the input field should not be the same as the time
-  //         expect(startDate).not.to.eq(endDate);
-  //       });
-  //     });
-  // });
+      cy.get('input[name="timeStart"]').then(($start) => {
+        const startDate = $start.val();
+        // the value of the input field should not be the same as the time
+        cy.get('input[name="timeEnd"]').then(($end) => {
+          const endDate = $end.val();
+          // the value of the input field should not be the same as the time
+          expect(startDate).not.to.eq(endDate);
+        });
+      });
+  });
 
   // 13
   it("Create Invalid Appointment with All Fields Filled and Start time after End time", () => {
     cy.userLogin();
     taskCreationVisit(
-      ((title = "Meeting date"),
-      (description = "Meeting date"),
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
       (from = utils.getTimeString(0, 2)),
       (to = utils.getTimeString(0, 1)),
       (date = utils.getDateString()),
-      (location = "HCMUS"),
-      (attendees = ["Quan"]),
+      (location = utils.getLocation()),
+      (attendees = utils.getUsers(Cypress.env('CURRENT_USER'))),
       (submit = false))
     );
 

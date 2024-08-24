@@ -1,4 +1,4 @@
-import * as utils from "../utils/dateTime";
+import * as utils from "../utils";
 
 const HOST = Cypress.env("HOST");
 
@@ -97,163 +97,170 @@ describe("Task creation", (title, description, dueTime, dueDate, assignees, subm
   };
 
   // 01
-  // it("Create Valid Task with All Fields Filled", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Setup project"),
-  //     (description = "Setup backend using Java Spring Boot"),
-  //     (dueTime = utils.getTimeString(2)),
-  //     (dueDate = utils.getDateString(2)),
-  //     (assignees = ["Quan", "Harry Potter"]))
-  //   );
+  it("Create Valid Task with All Fields Filled", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (dueTime = utils.getTimeString(2)),
+      (dueDate = utils.getDateString(2)),
+      (assignees = utils.getUsers(' ')))
+    );
 
-  //   cy.contains("Lưu công việc thành công").should("be.visible");
-  // });
+    cy.contains("Lưu công việc thành công").should("be.visible");
+  });
 
   // 02
-  // it("Create Invalid Task with Deadline time before the current time", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Setup project"),
-  //     (description = "Setup backend using Java Spring Boot"),
-  //     (dueTime = utils.getTimeString(-1)),
-  //     (dueDate = utils.getDateString()),
-  //     (assignees = ["Quan", "Harry Potter"]))
-  //   );
+  it("Create Invalid Task with Deadline time before the current time", () => {
+    cy.userLogin();
+    const time = utils.getTimeString(-1, 0);
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (dueTime = time),
+      (dueDate = utils.getDateString()),
+      (assignees = utils.getUsers(' ')),
+      (submit = false))
+    );
 
-  //   cy.contains(getTimeString().split(":")[1].split(" ")[0]).should(
-  //     "not.be.visible"
-  //   );
-  // });
+    // verify the input field value
+    cy.get('input[name="deadline"]').then(($input) => {
+      const date = $input.val();
+      // the value of the input field should not be the same as the time
+      expect(date).not.to.eq(time);
+    });
+  });
 
   // 03
-  // it("Create Invalid Task with Deadline date before the current date", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Setup project"),
-  //     (description = "Setup backend using Java Spring Boot"),
-  //     (dueTime = utils.getTimeString(2)),
-  //     (dueDate = utils.getDateString(-1)),
-  //     (assignees = ["Quan", "Harry Potter"]))
-  //   );
+  it("Create Invalid Task with Deadline date before the current date", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (dueTime = utils.getTimeString(2, 0)),
+      (dueDate = utils.getDateString(-1)),
+      (assignees = utils.getUsers(' ')),
+      (submit = true))
+    );
 
-  //   cy.contains("Ngày tới hạn phải lớn hơn hoặc bằng ngày hiện tại").should("be.visible");
-  // });
+    cy.contains("Ngày tới hạn phải lớn hơn hoặc bằng ngày hiện tại").should("be.visible");
+  });
 
   // 04
-  // it("Create Invalid Task without title", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = ""),
-  //     (description = "Setup backend using Java Spring Boot"),
-  //     (dueTime = utils.getTimeString(2)),
-  //     (dueDate = utils.getDateString(2)),
-  //     (assignees = ["Quan", "Harry Potter"]))
-  //   );
+  it("Create Invalid Task without title", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = ""),
+      (description = utils.getDescription()),
+      (dueTime = utils.getTimeString(2, 0)),
+      (dueDate = utils.getDateString(2)),
+      (assignees = utils.getUsers(' ')))
+    );
 
-  //   cy.contains("Vui lòng nhập tiêu đề").should("be.visible");
-  // })
+    cy.contains("Vui lòng nhập tiêu đề").should("be.visible");
+  })
 
   // 05
-  // it("Create Invalid Task without assigned members", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Setup project"),
-  //     (description = "Setup backend using Java Spring Boot"),
-  //     (dueTime = utils.getTimeString(2)),
-  //     (dueDate = utils.getDateString(2)),
-  //     (assignees = []))
-  //   );
+  it("Create Invalid Task without assigned members", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (dueTime = utils.getTimeString(2, 0)),
+      (dueDate = utils.getDateString(2)),
+      (assignees = []))
+    );
 
-  //   cy.contains("Vui lòng chọn người sẽ thực hiện công việc").should(
-  //     "be.visible"
-  //   );
-  // });
+    cy.contains("Vui lòng chọn người sẽ thực hiện công việc").should(
+      "be.visible"
+    );
+  });
 
   // 06
-  // it("Create Valid Task with minimum valid deadline time", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Setup project"),
-  //     (description = "Setup backend using Java Spring Boot"),
-  //     (dueTime = utils.getTimeString(0, 1)),
-  //     (dueDate = utils.getDateString(1)),
-  //     (assignees = ["Quan", "Harry Potter"]))
-  //   );
+  it("Create Valid Task with minimum valid deadline time", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (dueTime = utils.getTimeString(0, 1)),
+      (dueDate = utils.getDateString(1)),
+      (assignees = utils.getUsers(' ')))
+    );
 
-  //   cy.contains("Lưu công việc thành công").should(
-  //     "be.visible"
-  //   );
-  // });
+    cy.contains("Lưu công việc thành công").should(
+      "be.visible"
+    );
+  });
 
   // 07
-  // it("Create Valid Task with minimum valid deadline date", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Setup project"),
-  //     (description = "Setup backend using Java Spring Boot"),
-  //     (dueTime = utils.getTimeString(0, 0)),
-  //     (dueDate = utils.getDateString()),
-  //     (assignees = ["Quan", "Harry Potter"]))
-  //   );
+  it("Create Valid Task with minimum valid deadline date", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (dueTime = utils.getTimeString(0, 0)),
+      (dueDate = utils.getDateString()),
+      (assignees = utils.getUsers(' ')))
+    );
 
-  //   cy.contains("Lưu công việc thành công").should(
-  //     "be.visible"
-  //   );
-  // });
+    cy.contains("Lưu công việc thành công").should(
+      "be.visible"
+    );
+  });
 
   // 08
-  // it("Create Invalid Task with maximum invalid deadline time", () => {
-  //   const time = utils.getTimeString(0, -1);
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Setup project"),
-  //     (description = "Setup backend using Java Spring Boot"),
-  //     (dueTime = time),
-  //     (dueDate = utils.getDateString()),
-  //     (assignees = ["Quan", "Harry Potter"]),
-  //     (submit = false))
-  //   );
+  it("Create Invalid Task with maximum invalid deadline time", () => {
+    const time = utils.getTimeString(0, -1);
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (dueTime = time),
+      (dueDate = utils.getDateString()),
+      (assignees = utils.getUsers(' ')),
+      (submit = false))
+    );
 
-  //   // verify the input field value
-  //   cy.get('input[name="deadline"]').then(($input) => {
-  //     const date = $input.val();
-  //     // the value of the input field should not be the same as the time
-  //     expect(date).not.to.eq(time);
-  //   });
-  // });
+    // verify the input field value
+    cy.get('input[name="deadline"]').then(($input) => {
+      const date = $input.val();
+      // the value of the input field should not be the same as the time
+      expect(date).not.to.eq(time);
+    });
+  });
 
   // 09
-  // it("Create Invalid Task with maximum invalid deadline date", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Setup project"),
-  //     (description = "Setup backend using Java Spring Boot"),
-  //     (dueTime = utils.getTimeString()),
-  //     (dueDate = utils.getDateString()),
-  //     (assignees = ["Quan", "Harry Potter"]))
-  //   );
+  it("Create Invalid Task with maximum invalid deadline date", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (dueTime = utils.getTimeString()),
+      (dueDate = utils.getDateString(-1)),
+      (assignees = utils.getUsers(' ')),
+      (submit = true))
+    );
 
-  //   cy.contains("Ngày tới hạn phải lớn hơn hoặc bằng ngày hiện tại").should(
-  //     "be.visible"
-  //   );
-  // });
+    cy.contains("Ngày tới hạn phải lớn hơn hoặc bằng ngày hiện tại").should(
+      "be.visible"
+    );
+  });
 
 
   // 10
-  // it("Create Invalid Task with maximum invalid deadline date", () => {
-  //   cy.userLogin();
-  //   taskCreationVisit(
-  //     ((title = "Setup project"),
-  //     (description = "Setup backend using Java Spring Boot"),
-  //     (dueTime = utils.getTimeString()),
-  //     (dueDate = utils.getDateString(-1)),
-  //     (assignees = ["Quan", "Harry Potter"]))
-  //   );
+  it("Create Invalid Task with boundary deadline date time", () => {
+    cy.userLogin();
+    taskCreationVisit(
+      ((title = utils.getTitle()),
+      (description = utils.getDescription()),
+      (dueTime = utils.getTimeString()),
+      (dueDate = utils.getDateString()),
+      (assignees = utils.getUsers(' ')))
+    );
 
-  //   cy.contains("Ngày tới hạn phải lớn hơn hoặc bằng ngày hiện tại").should(
-  //     "be.visible"
-  //   );
-  // });
+    cy.contains("Lưu công việc thành công").should(
+      "be.visible"
+    );
+  });
 });
 
